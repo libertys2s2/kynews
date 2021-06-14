@@ -1,0 +1,2 @@
+# kynews
+news page
