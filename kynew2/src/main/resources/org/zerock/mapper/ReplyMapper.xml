@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="org.zerock.mapper.ReplyMapper">
+	
+	<insert id="insert">
+	insert into ynews_reply(bno,reply,replyer)
+	values (#{bno},#{reply},#{replyer})
+	</insert>
+	<select id="read" resultType="org.zerock.domain.ReplyVO">
+	select * from ynews_reply where rno = #{rno}
+	</select>
+	<delete id="delete">
+	delete from ynews_reply where rno = #{rno}
+	</delete>
+	<update id="update">
+	update ynews_reply set reply = #{reply}, updateDate = now() where rno =#{rno}
+	</update>
+	<select id ="getListWithPaging" resultType="org.zerock.domain.ReplyVO">
+	<![CDATA[
+	
+	  select *
+	from ( 
+	select @rownum:=@rownum+1 as rn, re.*
+	from (select @rownum:=0) as tmp, ynews_reply re
+	      where bno=#{bno} and rno >0 and @rownum <= (#{cri.pageNum}) * (#{cri.amount})
+		 order by bno asc) replyList
+	where rn >(#{cri.pageNum}-1) * (#{cri.amount});]]>
+	
+	
+
+	
+	</select>
+	
+	<select id="getCountByBno" resultType="int">
+	<![CDATA[
+	select count(rno) from ynews_reply where bno = #{bno}
+	]]>
+	</select>
+	<update id="updateReplyCnt">
+	update ynews_table set replycnt = replycnt + #{amount} where bno = #{bno}
+	
+	</update>
+
+	</mapper>

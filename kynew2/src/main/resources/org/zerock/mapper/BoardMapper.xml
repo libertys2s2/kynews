@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="org.zerock.mapper.BoardMapper">
+	<select id="getList" resultType="org.zerock.domain.BoardVO">
+	<![CDATA[
+	select * from ynews_table where bno>0
+	]]>
+	</select>
+	
+		<select id="getList0" resultType="org.zerock.domain.BoardVO">
+	<![CDATA[
+	select * from ynews_table where bno>0 and category = #{category}
+	]]>
+	</select>
+	<select id="getList2" resultType="org.zerock.domain.BoardVO">
+	<![CDATA[
+	select * from ynews_table where bno>0 and category = #{category}
+	]]>
+	</select>
+	
+	<select id="getList3" resultType="org.zerock.domain.BoardVO">
+	<![CDATA[
+	select * from ynews_table where bno>0 and category = #{category}
+	]]>
+	
+	</select>
+	
+	<select id="getList4" resultType="org.zerock.domain.BoardVO">
+	<![CDATA[
+	select * from ynews_table where bno>0 and category = #{category}
+	]]>
+	
+	</select>
+	
+	<select id="getList5" resultType="org.zerock.domain.BoardVO">
+	<![CDATA[
+	select * from ynews_table where bno>0 and category = #{category}
+	]]>
+	
+	</select>
+	
+	
+	<sql id="criteria">
+		<trim prefix="(" suffix=") AND " prefixOverrides="OR">
+			<foreach item='type' collection="typeArr">
+				<trim prefix="OR">
+					<choose>
+						<when test="type=='T'.toString()">
+						 title like CONCAT('%',#{keyword},'%') 
+						</when>
+						<when test="type=='C'.toString()">
+						 content like CONCAT('%',#{keyword},'%') 
+						</when>
+						<when test="type=='W'.toString()">
+						 writer like CONCAT('%',#{keyword},'%') 
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim>	
+	</sql>
+	<select id="getListWithPaging" resultType="org.zerock.domain.BoardVO">
+	<![CDATA[
+select  *
+from ( 
+	select @rownum:=@rownum+1 as rn, ynews_table.*  
+	from (select @rownum:=0) as tmp, ynews_table where 		
+	]]>
+	<include refid="criteria"></include>
+	
+	<!--boardList는 별칭  -->
+	<![CDATA[
+	 bno>0 order by bno asc) boardList where rn >(#{pageNum}-1) * #{amount} and rn<= #{pageNum} * #{amount}   ]]> 
+	
+	</select>
+	
+	
+	<select id="getListWithPaging2" resultType="org.zerock.domain.BoardVO">
+
+select  *
+	from ( 
+	select @rownum:=@rownum+1 as rn, ynews_table.*  
+	from (select @rownum:=0) as tmp, ynews_table where 	
+
+	<include refid="criteria"></include>
+	
+	<!--boardList는 별칭  -->
+	<![CDATA[
+	 bno>0 and category=#{category} order by bno asc) boardList where rn >(#{pageNum}-1) * #{amount} and rn<= #{pageNum} * #{amount}   ]]> 
+
+	
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<insert id ="insert">
+	insert into ynews_table (title,content,writer,category) values (#{title},#{content},#{writer},#(category))
+	</insert>
+	
+	<insert id="insertSelectKey">
+	<selectKey keyProperty="bno" order="BEFORE" resultType="long">	<!--before 실행하기 전에 after는 insert 후에   -->
+	select max(bno)+1 from ynews_table;
+	</selectKey>
+	
+	insert into ynews_table(bno,title,content,writer,category)
+	values (#{bno}, #{title},#{content},#{writer},#{category})
+</insert>
+
+	<select id="read" resultType="org.zerock.domain.BoardVO">
+	select * from ynews_table where bno = #{bno}
+	</select>
+	<delete id="delete">
+	delete from ynews_table where bno=#{bno}
+	
+	</delete>
+	<update id="update">
+		update ynews_table set title = #{title},
+		content= #{content},
+		writer = #{writer},
+		updatedate = now() 
+		where bno=#{bno}
+	
+	
+	</update>
+	<select id="getTotalCount" resultType="int">
+	select count(*) from ynews_table where 
+	<include refid="criteria"></include>
+	 bno >0
+	</select>
+	
+	<select id="getTotalCount2" resultType="int">
+	select count(*) from ynews_table where 
+	<include refid="criteria"></include>
+	 bno >0 and category = #{category} 
+	</select>
+	
+	
+	<update id="updateReplyCnt">
+	
+	update ynews_table set replycnt = replycnt + #{amount} where bno = #{bno}
+	</update>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	</mapper>
